@@ -1,20 +1,11 @@
-@page "/frequency/{id}"
+@page "/frequency/{id:int}"
 @inject DataService data
 
 
-<p>
-    <div class="card">
-        <div class="card-body">
-            <span class="card-title">Cast a New Ray:</span>
-            <div class="input-group">
-                <input @bind="newRayText" class="form-control" />
-                <div class="input-group-append">
-                    <button @onclick="CastRay" type="button" class="btn btn-outline-secondary"><span class="oi oi-audio"></span></button>
-                </div>
-            </div>
-        </div>
-    </div>
-</p>
+<RayInput @bind-newRayText="newRayText" RayCast="@RayCast" />
+<div class="spinner-border" role="status" hidden="@HideLoading">
+    <span class="sr-only">Loading...</span>
+</div>
 @foreach (var ray in data.Rays)
 {
     <p>
@@ -23,21 +14,30 @@
 }
 
 
-@code{
+@code {
     [Parameter]
-    public string Id { get; set; }
+    public int Id { get; set; }
 
     public string newRayText { get; set; }
 
+    public bool HideLoading { get; set; } = false;
+
     protected override void OnParametersSet()
     {
-        data.UpdatedRays += StateHasChanged;
-        data.SelectedFrequency = Int32.Parse(Id);
+        data.UpdatedRays += UpdateForNewRays;
+        data.SelectedFrequency = Id;
     }
-    
-    async Task CastRay()
+
+    void UpdateForNewRays()
     {
-        await data.CreateRay(newRayText);
-        newRayText = "";
+        HideLoading = true;
+        if (!data.Rays.Any(r => r.UserName == data.CurrentUser.Name))
+            newRayText = $"Hello, My Name is {data.CurrentUser.Name}";
+        StateHasChanged();
+    }
+
+    void RayCast()
+    {
+        HideLoading = false;
     }
 }
