@@ -1,0 +1,48 @@
+@inherits TestContext
+
+
+@code {
+	public void TestFrequencyListAdd()
+	{
+		Services.AddSingleton<NavigationManager, MockNavigationManager>();
+		Services.AddSingleton<IDataService, TestDataService>();
+		// Arrange
+		var cut = Render(@<FrequencyList />);
+
+		// Act
+		cut.Find("input").Change("Hi");
+		cut.Find("button").Click();
+
+		// Assert that the counter was incremented
+		cut.MarkupMatches(@"<li diff:ignore></li>
+							<li class:ignore>
+								<a href=""frequency/2"" class=""nav-link"">
+									<span class=""oi oi-audio-spectrum"" aria-hidden=""true""></span>
+									<span> Hi </span>
+								</a>
+							</li>
+							<li diff:ignore></li>");
+	}
+
+    [Fact]
+	public void CounterStartsAtZero()
+	{
+		// Arrange
+		var cut = Render(@<Counter />);
+
+		// Assert that content of the paragraph shows counter at zero
+		cut.Find("p").MarkupMatches(@<p>Current count: 0</p>);
+	}
+    [Fact]
+	public void ClickingButtonIncrementsCounter()
+	{
+		// Arrange
+		var cut = Render(@<Counter />);
+
+		// Act - click button to increment counter
+		cut.Find("button").Click();
+
+		// Assert that the counter was incremented
+		cut.Find("p").MarkupMatches(@<p>Current count: 1</p>);
+	}
+}

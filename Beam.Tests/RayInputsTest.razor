@@ -1,0 +1,13 @@
+@* <SnapshotTest>
+    <TestInput>
+        <RayInput newRayTest="test text" />
+    </TestInput>
+</SnapshotTest>
+
+@code
+{
+    void Setup(SnapshotTest test)
+    {
+        test.Services.AddSingleton<IDataService, TestDataService>();
+    }
+} *@
